@@ -1,7 +1,7 @@
 <template>
   <Layout class-prefix="layout">
     <NumberPad/>
-    <Types/>
+    <Types xxx="hi"/>
     <Notes/>
     <Tags/>
   </Layout>
@@ -25,4 +25,3 @@ export default {
   flex-direction: column-reverse;
 }
 </style>
-
