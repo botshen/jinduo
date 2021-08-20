@@ -1,7 +1,7 @@
 <template>
   <Layout>
     <Tabs class-prefix="type" :data-source="recordTypeList" :value.sync="type"/>
-    <ol>
+    <ol v-if="groupedList.length>0">
       <li v-for="(group, index) in groupedList" :key="index">
         <h3 class="title">{{ beautify(group.title) }} <span>￥{{ group.total }}</span></h3>
         <ol>
@@ -15,6 +15,9 @@
         </ol>
       </li>
     </ol>
+    <div v-else class="noResult">
+      目前没有相关记录
+    </div>
   </Layout>
 </template>
 <script lang="ts">
@@ -24,7 +27,6 @@ import Tabs from '@/components/Tabs.vue';
 import recordTypeList from '@/constants/recordTypeList';
 import dayjs from 'dayjs';
 import clone from '@/lib/clone';
-
 @Component({
   components: {Tabs},
 })
@@ -32,7 +34,6 @@ export default class Statistics extends Vue {
   tagString(tags: Tag[]) {
     return tags.length === 0 ? '无' : tags.map(t => t.name).join('，');
   }
-
   beautify(string: string) {
     const day = dayjs(string);
     const now = dayjs();
@@ -49,11 +50,9 @@ export default class Statistics extends Vue {
       return day.format('YYYY年M月D日');
     }
   }
-
   get recordList() {
     return (this.$store.state as RootState).recordList;
   }
-
   get groupedList() {
     const {recordList} = this;
     const newList = clone(recordList)
@@ -80,11 +79,9 @@ export default class Statistics extends Vue {
     });
     return result;
   }
-
   beforeCreate() {
     this.$store.commit('fetchRecords');
   }
-
   type = '-';
   recordTypeList = recordTypeList;
 }
@@ -94,21 +91,17 @@ export default class Statistics extends Vue {
 ::v-deep {
   .type-tabs-item {
     background: #C4C4C4;
-
     &.selected {
       background: white;
-
       &::after {
         display: none;
       }
     }
   }
-
   .interval-tabs-item {
     height: 48px;
   }
 }
-
 %item {
   padding: 8px 16px;
   line-height: 24px;
@@ -116,19 +109,20 @@ export default class Statistics extends Vue {
   justify-content: space-between;
   align-content: center;
 }
-
 .title {
   @extend %item;
 }
-
 .record {
   background: white;
   @extend %item;
 }
-
 .notes {
   margin-right: auto;
   margin-left: 16px;
   color: #999;
+}
+.noResult {
+  padding: 16px;
+  text-align: center;
 }
 </style>
